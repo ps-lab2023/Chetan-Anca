@@ -30,41 +30,41 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public Optional<Owner> findById(long id) throws OwnerNotFoundException {
+    public Owner findById(long id) throws OwnerNotFoundException {
         Optional<Owner> owner = ownerRepository.findById(id);
         if (!owner.isPresent()) {
             throw new OwnerNotFoundException("Owner with id " + id + " not found");
         }
-        return owner;
+        return owner.get();
     }
 
     @Override
-    public Optional<Owner> findByEmail(String email) throws OwnerNotFoundException {
+    public Owner findByEmail(String email) throws OwnerNotFoundException {
         Optional<Owner> owner = ownerRepository.findByEmail(email);
         if (!owner.isPresent()) {
             throw new OwnerNotFoundException("Owner with email " + email + " not found");
         }
-        return owner;
+        return owner.get();
     }
 
 
     @Override
-    public Optional<Owner> findByFirstNameAndLastName(String firstName, String lastName) throws OwnerNotFoundException {
+    public Owner findByFirstNameAndLastName(String firstName, String lastName) throws OwnerNotFoundException {
         Optional<Owner> owner = ownerRepository.findByFirstNameAndLastName(firstName, lastName);
         if (!owner.isPresent()) {
             throw new OwnerNotFoundException("Owner with first name " + lastName + " and last name " + lastName + " not found");
         }
-        return owner;
+        return owner.get();
     }
 
 
     @Override
-    public Optional<Owner> findByEmailAndPassword(String email, String password) throws OwnerNotFoundException {
+    public Owner findByEmailAndPassword(String email, String password) throws OwnerNotFoundException {
         Optional<Owner> owner = ownerRepository.findByEmailAndPassword(email, password);
         if (!owner.isPresent()) {
             throw new OwnerNotFoundException("Owner with email " + email + " and password " + password + " not found");
         }
-        return owner;
+        return owner.get();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public Optional<Owner> addOwner(Owner owner) throws InvalidOwnerException {
+    public Owner addOwner(Owner owner) throws InvalidOwnerException {
         try {
             ownerDetailsValidator.validateOwnerDetails(owner);
             Optional<Owner> foundOwner = ownerRepository.findByEmail(owner.getEmail());
@@ -88,11 +88,11 @@ public class OwnerServiceImpl implements OwnerService {
         } catch (WrongDetailsException exp) {
             throw new InvalidOwnerException(exp.getMessage());
         }
-        return Optional.of(owner);
+        return owner;
     }
 
     @Override
-    public Optional<Owner> updateOwner(Owner owner) throws InvalidOwnerException, OwnerNotFoundException {
+    public Owner updateOwner(Owner owner) throws InvalidOwnerException, OwnerNotFoundException {
         Optional<Owner> ownerToUpdate = ownerRepository.findById(owner.getOwnerId());
         if (ownerToUpdate.isPresent()) {
             User userToUpdate = new User(ownerToUpdate.get().getOwnerId(), ownerToUpdate.get().getEmail(),
@@ -109,7 +109,16 @@ public class OwnerServiceImpl implements OwnerService {
         } else {
             throw new OwnerNotFoundException("Owner to update not found");
         }
-        return ownerToUpdate;
+        return ownerToUpdate.get();
+    }
+
+    @Override
+    public Owner updateAnimalsList(Owner owner) throws OwnerNotFoundException {
+        if (!ownerRepository.findById(owner.getOwnerId()).isPresent()) {
+            throw new OwnerNotFoundException("Owner with id " + owner.getOwnerId() + " not found");
+        }
+        ownerRepository.save(owner);
+        return owner;
     }
 
     @Override

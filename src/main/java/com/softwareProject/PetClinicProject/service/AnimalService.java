@@ -8,11 +8,10 @@ import com.softwareProject.PetClinicProject.model.Owner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public interface AnimalService {
-    Optional<Animal> findById(long id) throws AnimalNotFoundException;
+    Animal findById(long id) throws AnimalNotFoundException;
 
     List<Animal> findAllByName(String name) throws AnimalNotFoundException;
 
@@ -24,9 +23,11 @@ public interface AnimalService {
 
     List<Animal> findAll();
 
-    Optional<Animal> addAnimal(Animal animal) throws InvalidAnimalException;
+    Animal addAnimal(Animal animal) throws InvalidAnimalException;
 
-    Optional<Animal> updateAnimal(Animal animal) throws InvalidAnimalException, AnimalNotFoundException;
+    Animal updateAnimal(Animal animal) throws InvalidAnimalException, AnimalNotFoundException;
+
+    Animal updateAppointmentsList(Animal animal) throws AnimalNotFoundException;
 
     void deleteById(long id) throws AnimalNotFoundException;
 }

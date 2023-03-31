@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +20,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findAllByAnimal(Animal animal);
 
-    List<Appointment> findAllByTime(LocalTime time);
+    List<Appointment> findAllByTime(LocalDateTime time);
 
     List<Appointment> findAll();
 }

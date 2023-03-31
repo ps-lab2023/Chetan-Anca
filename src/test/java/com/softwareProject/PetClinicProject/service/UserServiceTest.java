@@ -44,10 +44,10 @@ public class UserServiceTest {
         User user = createValidUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        Optional<User> foundUser = userService.findById(user.getId());
+        User foundUser = userService.findById(user.getId());
 
         assertNotNull(foundUser);
-        assertEquals(1L, foundUser.get().getId());
+        assertEquals(1L, foundUser.getId());
     }
 
     @Test
@@ -66,11 +66,11 @@ public class UserServiceTest {
         User user = createValidUser();
 
         when(userRepository.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12")).thenReturn(Optional.of(user));
-        Optional<User> foundUser = userService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
+        User foundUser = userService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
 
         assertNotNull(foundUser);
-        assertEquals("johnsmith@yahoo.com", foundUser.get().getEmail());
-        assertEquals("MyPassword.12", foundUser.get().getPassword());
+        assertEquals("johnsmith@yahoo.com", foundUser.getEmail());
+        assertEquals("MyPassword.12", foundUser.getPassword());
     }
 
     @Test
@@ -103,10 +103,10 @@ public class UserServiceTest {
         User user = createValidUser();
 
         when(userRepository.save(user)).thenReturn(user);
-        Optional<User> savedUser = userService.addUser(user);
+        User savedUser = userService.addUser(user);
 
-        assertTrue(savedUser.isPresent());
-        assertEquals("johnsmith@yahoo.com", savedUser.get().getEmail());
+        assertNotNull(savedUser);
+        assertEquals("johnsmith@yahoo.com", savedUser.getEmail());
     }
 
     @Test
@@ -133,11 +133,11 @@ public class UserServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(userUpdate)).thenReturn(userToReturn);
-        Optional<User> updatedUser = userService.updateUser(userUpdate);
+        User updatedUser = userService.updateUser(userUpdate);
 
         assertNotNull(updatedUser);
-        assertEquals("johnsmith12@yahoo.com", updatedUser.get().getEmail());
-        assertEquals("MyPassword.12", updatedUser.get().getPassword());
+        assertEquals("johnsmith12@yahoo.com", updatedUser.getEmail());
+        assertEquals("MyPassword.12", updatedUser.getPassword());
     }
 
     @Test

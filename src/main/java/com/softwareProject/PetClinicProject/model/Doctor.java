@@ -1,9 +1,11 @@
 package com.softwareProject.PetClinicProject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,8 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @AllArgsConstructor
-public class Doctor {
+@NoArgsConstructor
+public class Doctor implements Serializable {
     @Id
     private long doctorId;
     private String firstName;
@@ -23,12 +26,9 @@ public class Doctor {
     private String phoneNumber;
     private LocalTime startScheduleTime;
     private LocalTime endScheduleTime;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "doctor")
-    private List<Appointment> appointments;
-
-    public Doctor() {
-        appointments = new ArrayList<>();
-    }
+    private List<Appointment> appointments = new ArrayList<>();
 
     @Override
     @Transactional

@@ -1,19 +1,15 @@
 package com.softwareProject.PetClinicProject;
 
 import com.softwareProject.PetClinicProject.model.*;
-import com.softwareProject.PetClinicProject.repository.*;
 import com.softwareProject.PetClinicProject.service.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import javax.print.Doc;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
-import java.util.List;
-import java.util.Optional;
+
 
 @SpringBootApplication
 public class PetClinicProjectApplication {
@@ -36,14 +32,6 @@ public class PetClinicProjectApplication {
             owner.setPhoneNumber("0745382312");
             ownerService.addOwner(owner);
 
-//            Owner owner1 = new Owner();
-//            owner1.setFirstName("Anca");
-//            owner1.setLastName("Chetan");
-//            owner1.setEmail("ancach@yahoo.com");
-//            owner1.setPassword("Parola@Mea123");
-//            owner1.setPhoneNumber("0745382312");
-//            ownerService.addOwner(owner);
-
             Animal animal1 = new Animal();
             animal1.setOwner(owner);
             animal1.setName("Mitzu");
@@ -64,21 +52,15 @@ public class PetClinicProjectApplication {
             doctor.setEmail("anaPop@yahoo.com");
             doctor.setPassword("PArola@Mea12");
             doctor.setPhoneNumber("0756326597");
-            doctor.setStartScheduleTime(LocalTime.of(15, 30, 0));
-            doctor.setEndScheduleTime(LocalTime.of(22, 0, 0));
+            doctor.setStartScheduleTime(LocalTime.of(8, 0, 0));
+            doctor.setEndScheduleTime(LocalTime.of(14, 0, 0));
             doctorService.addDoctor(doctor);
 
             Appointment appointment = new Appointment();
             appointment.setDoctor(doctor);
             appointment.setAnimal(animal1);
-            appointment.setTime(LocalDateTime.of(2023, Month.APRIL, 14, 14, 20, 0));
+            appointment.setTime(LocalDateTime.of(2023, 4, 20, 14, 0, 0));
             appointmentService.addAppointment(appointment);
-
-//            Appointment appointment1 = new Appointment();
-//            appointment1.setDoctor(doctor);
-//            appointment1.setAnimal(animal1);
-//            appointment1.setTime(LocalDateTime.of(2023, Month.APRIL, 14, 14, 20, 0));
-//            appointmentService.addAppointment(appointment1);
 
             Animal updateAnimal = new Animal();
             updateAnimal.setAnimalId(animal2.getAnimalId());
@@ -92,12 +74,17 @@ public class PetClinicProjectApplication {
 
             Doctor doctorUpdate = new Doctor();
             doctorUpdate.setDoctorId(doctor.getDoctorId());
-            doctorUpdate.setEndScheduleTime(LocalTime.of(20, 0, 0));
+            doctorUpdate.setEndScheduleTime(LocalTime.of(15, 0, 0));
             doctorService.updateDoctor(doctorUpdate);
 
+            System.out.println(ownerService.findById(owner.getOwnerId()).getAnimals());
+            System.out.println(doctorService.findById(doctor.getDoctorId()).getAppointments());
+            System.out.println(animalService.findById(animal1.getAnimalId()).getAppointments());
+
             //animalService.deleteById(animal1.getAnimalId());
-            ownerService.deleteById(owner.getOwnerId());
+            //ownerService.deleteById(owner.getOwnerId());
             //doctorService.deleteById(doctor.getDoctorId());
+            //System.out.println(doctorService.findByFirstNameAndLastName("Ana", "Pop"));
         };
 
     }

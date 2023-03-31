@@ -1,9 +1,11 @@
 package com.softwareProject.PetClinicProject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,8 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @AllArgsConstructor
-public class Owner {
+@NoArgsConstructor
+public class Owner implements Serializable {
     @Id
     private long ownerId;
     private String firstName;
@@ -20,12 +23,9 @@ public class Owner {
     private String email;
     private String password;
     private String phoneNumber;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "owner")
-    private List<Animal> animals;
-
-    public Owner() {
-        animals = new ArrayList<>();
-    }
+    private List<Animal> animals = new ArrayList<>();;
 
     @Override
     @Transactional

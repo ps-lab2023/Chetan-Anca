@@ -44,10 +44,10 @@ public class OwnerServiceTest {
         Owner owner = createValidOwner();
 
         when(ownerRepository.findById(1L)).thenReturn(Optional.of(owner));
-        Optional<Owner> foundOwner = ownerService.findById(owner.getOwnerId());
+        Owner foundOwner = ownerService.findById(owner.getOwnerId());
 
         assertNotNull(foundOwner);
-        assertEquals(1L, foundOwner.get().getOwnerId());
+        assertEquals(1L, foundOwner.getOwnerId());
     }
 
     @Test
@@ -66,11 +66,11 @@ public class OwnerServiceTest {
         Owner owner = createValidOwner();
 
         when(ownerRepository.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12")).thenReturn(Optional.of(owner));
-        Optional<Owner> foundOwner = ownerService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
+        Owner foundOwner = ownerService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
 
         assertNotNull(foundOwner);
-        assertEquals("johnsmith@yahoo.com", foundOwner.get().getEmail());
-        assertEquals("MyPassword.12", foundOwner.get().getPassword());
+        assertEquals("johnsmith@yahoo.com", foundOwner.getEmail());
+        assertEquals("MyPassword.12", foundOwner.getPassword());
     }
 
     @Test
@@ -113,11 +113,11 @@ public class OwnerServiceTest {
         User user = new User(1L, owner.getEmail(), owner.getPassword(), UserType.OWNER);
 
         when(ownerRepository.save(owner)).thenReturn(owner);
-        when(userService.addUser(user)).thenReturn(Optional.of(user));
-        Optional<Owner> savedOwner = ownerService.addOwner(owner);
+        when(userService.addUser(user)).thenReturn(user);
+        Owner savedOwner = ownerService.addOwner(owner);
 
-        assertTrue(savedOwner.isPresent());
-        assertEquals("johnsmith@yahoo.com", savedOwner.get().getEmail());
+        assertNotNull(savedOwner);
+        assertEquals("johnsmith@yahoo.com", savedOwner.getEmail());
         then(userService).should().addUser(user);
     }
 
@@ -148,12 +148,12 @@ public class OwnerServiceTest {
 
         when(ownerRepository.findById(1L)).thenReturn(Optional.of(owner));
         when(ownerRepository.save(ownerUpdate)).thenReturn(ownerToReturn);
-        when(userService.addUser(user)).thenReturn(Optional.of(user));
-        Optional<Owner> updatedOwner = ownerService.updateOwner(ownerUpdate);
+        when(userService.addUser(user)).thenReturn(user);
+        Owner updatedOwner = ownerService.updateOwner(ownerUpdate);
 
         assertNotNull(updatedOwner);
-        assertEquals("johnsmith12@yahoo.com", updatedOwner.get().getEmail());
-        assertEquals("0745382312", updatedOwner.get().getPhoneNumber());
+        assertEquals("johnsmith12@yahoo.com", updatedOwner.getEmail());
+        assertEquals("0745382312", updatedOwner.getPhoneNumber());
         then(userService).should().addUser(user);
     }
 

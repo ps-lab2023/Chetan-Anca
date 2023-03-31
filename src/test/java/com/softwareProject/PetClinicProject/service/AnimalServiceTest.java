@@ -45,10 +45,10 @@ public class AnimalServiceTest {
         animal.setAnimalId(1L);
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
 
-        Optional<Animal> foundAnimal = animalService.findById(animal.getAnimalId());
+        Animal foundAnimal = animalService.findById(animal.getAnimalId());
 
         assertNotNull(foundAnimal);
-        assertEquals(1L, foundAnimal.get().getAnimalId());
+        assertEquals(1L, foundAnimal.getAnimalId());
     }
 
     @Test
@@ -158,10 +158,10 @@ public class AnimalServiceTest {
         animal.setAge(2);
 
         when(animalRepository.save(animal)).thenReturn(animal);
-        Optional<Animal> savedAnimal = animalService.addAnimal(animal);
+        Animal savedAnimal = animalService.addAnimal(animal);
 
         assertNotNull(savedAnimal);
-        assertEquals("Rex", savedAnimal.get().getName());
+        assertEquals("Rex", savedAnimal.getName());
     }
 
     @Test
@@ -218,11 +218,11 @@ public class AnimalServiceTest {
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
         when(animalRepository.save(animalUpdate)).thenReturn(animalToReturn);
 
-        Optional<Animal> savedAnimal = animalService.updateAnimal(animalUpdate);
+        Animal savedAnimal = animalService.updateAnimal(animalUpdate);
 
         assertNotNull(savedAnimal);
-        assertEquals(owner, savedAnimal.get().getOwner());
-        assertEquals("Haze", savedAnimal.get().getName());
+        assertEquals(owner, savedAnimal.getOwner());
+        assertEquals("Haze", savedAnimal.getName());
     }
 
     @Test

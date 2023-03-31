@@ -47,10 +47,10 @@ public class AppointmentServiceTest {
         appointment.setAppointmentId(1L);
 
         when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
-        Optional<Appointment> foundAppointment = appointmentService.findById(appointment.getAppointmentId());
+        Appointment foundAppointment = appointmentService.findById(appointment.getAppointmentId());
 
         assertNotNull(foundAppointment);
-        assertEquals(1L, foundAppointment.get().getAppointmentId());
+        assertEquals(1L, foundAppointment.getAppointmentId());
     }
 
     @Test
@@ -115,10 +115,10 @@ public class AppointmentServiceTest {
         appointment.setTime(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
 
         when(appointmentRepository.save(appointment)).thenReturn(appointment);
-        Optional<Appointment> savedAppointment = appointmentService.addAppointment(appointment);
+        Appointment savedAppointment = appointmentService.addAppointment(appointment);
 
         assertNotNull(savedAppointment);
-        assertEquals(doctor, savedAppointment.get().getDoctor());
+        assertEquals(doctor, savedAppointment.getDoctor());
     }
 
     @Test
@@ -176,11 +176,11 @@ public class AppointmentServiceTest {
         when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
         when(appointmentRepository.save(appointment)).thenReturn(appointmentToReturn);
 
-        Optional<Appointment> updatedAppointment = appointmentService.updateAppointmentTime(updateAppointment);
+        Appointment updatedAppointment = appointmentService.updateAppointmentTime(updateAppointment);
 
         assertNotNull(updatedAppointment);
-        assertEquals(animal, updatedAppointment.get().getAnimal());
-        assertEquals(LocalDateTime.of(2023, 4, 23, 14, 16, 00), updatedAppointment.get().getTime());
+        assertEquals(animal, updatedAppointment.getAnimal());
+        assertEquals(LocalDateTime.of(2023, 4, 23, 14, 16, 00), updatedAppointment.getTime());
     }
 
     @Test

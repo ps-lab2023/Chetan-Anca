@@ -46,10 +46,10 @@ public class DoctorServiceTest {
         Doctor doctor = createValidDoctor();
 
         when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
-        Optional<Doctor> foundDoctor = doctorService.findById(doctor.getDoctorId());
+        Doctor foundDoctor = doctorService.findById(doctor.getDoctorId());
 
         assertNotNull(foundDoctor);
-        assertEquals(1L, foundDoctor.get().getDoctorId());
+        assertEquals(1L, foundDoctor.getDoctorId());
     }
 
     @Test
@@ -68,11 +68,11 @@ public class DoctorServiceTest {
         Doctor doctor = createValidDoctor();
 
         when(doctorRepository.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12")).thenReturn(Optional.of(doctor));
-        Optional<Doctor> foundDoctor = doctorService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
+        Doctor foundDoctor = doctorService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
 
         assertNotNull(foundDoctor);
-        assertEquals("johnsmith@yahoo.com", foundDoctor.get().getEmail());
-        assertEquals("MyPassword.12", foundDoctor.get().getPassword());
+        assertEquals("johnsmith@yahoo.com", foundDoctor.getEmail());
+        assertEquals("MyPassword.12", foundDoctor.getPassword());
     }
 
     @Test
@@ -91,11 +91,11 @@ public class DoctorServiceTest {
         Doctor doctor = createValidDoctor();
 
         when(doctorRepository.findByFirstNameAndLastName("John", "Smith")).thenReturn(Optional.of(doctor));
-        Optional<Doctor> foundDoctor = doctorService.findByFirstNameAndLastName("John", "Smith");
+        Doctor foundDoctor = doctorService.findByFirstNameAndLastName("John", "Smith");
 
         assertNotNull(foundDoctor);
-        assertEquals("John", foundDoctor.get().getFirstName());
-        assertEquals("Smith", foundDoctor.get().getLastName());
+        assertEquals("John", foundDoctor.getFirstName());
+        assertEquals("Smith", foundDoctor.getLastName());
     }
 
     @Test
@@ -115,11 +115,11 @@ public class DoctorServiceTest {
         User user = new User(doctor.getDoctorId(), doctor.getEmail(), doctor.getPassword(), UserType.DOCTOR);
 
         when(doctorRepository.save(doctor)).thenReturn(doctor);
-        when(userService.addUser(user)).thenReturn(Optional.of(user));
-        Optional<Doctor> savedDoctor = doctorService.addDoctor(doctor);
+        when(userService.addUser(user)).thenReturn(user);
+        Doctor savedDoctor = doctorService.addDoctor(doctor);
 
-        assertTrue(savedDoctor.isPresent());
-        assertEquals("johnsmith@yahoo.com", savedDoctor.get().getEmail());
+        assertNotNull(savedDoctor);
+        assertEquals("johnsmith@yahoo.com", savedDoctor.getEmail());
         then(userService).should().addUser(user);
     }
 
@@ -153,13 +153,13 @@ public class DoctorServiceTest {
 
         when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
         when(doctorRepository.save(doctorUpdate)).thenReturn(doctorUpdate);
-        when(userService.addUser(user)).thenReturn(Optional.of(user));
-        Optional<Doctor> updatedDoctor = doctorService.updateDoctor(doctorUpdate);
+        when(userService.addUser(user)).thenReturn(user);
+        Doctor updatedDoctor = doctorService.updateDoctor(doctorUpdate);
 
         assertNotNull(updatedDoctor);
-        assertEquals("johnsmith12@yahoo.com", updatedDoctor.get().getEmail());
-        assertEquals("0745382312", updatedDoctor.get().getPhoneNumber());
-        assertEquals(LocalTime.of(15, 0, 0), updatedDoctor.get().getEndScheduleTime());
+        assertEquals("johnsmith12@yahoo.com", updatedDoctor.getEmail());
+        assertEquals("0745382312", updatedDoctor.getPhoneNumber());
+        assertEquals(LocalTime.of(15, 0, 0), updatedDoctor.getEndScheduleTime());
         then(userService).should().addUser(user);
     }
 

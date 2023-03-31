@@ -2,6 +2,7 @@ package com.softwareProject.PetClinicProject.service.impl;
 
 import com.softwareProject.PetClinicProject.exception.DoctorNotFoundException;
 import com.softwareProject.PetClinicProject.exception.InvalidDoctorException;
+import com.softwareProject.PetClinicProject.exception.OwnerNotFoundException;
 import com.softwareProject.PetClinicProject.model.*;
 import com.softwareProject.PetClinicProject.service.DoctorService;
 import com.softwareProject.PetClinicProject.service.UserService;
@@ -30,40 +31,40 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public Optional<Doctor> findById(long id) throws DoctorNotFoundException {
+    public Doctor findById(long id) throws DoctorNotFoundException {
         Optional<Doctor> doctor = doctorRepository.findById(id);
         if (!doctor.isPresent()) {
             throw new DoctorNotFoundException("Doctor with id " + id + " not found");
         }
-        return doctor;
+        return doctor.get();
     }
 
     @Override
-    public Optional<Doctor> findByEmail(String email) throws DoctorNotFoundException {
+    public Doctor findByEmail(String email) throws DoctorNotFoundException {
         Optional<Doctor> doctor = doctorRepository.findByEmail(email);
         if (!doctor.isPresent()) {
             throw new DoctorNotFoundException("Doctor with email " + email + " not found");
         }
-        return doctor;
+        return doctor.get();
     }
 
     @Override
-    public Optional<Doctor> findByFirstNameAndLastName(String firstName, String lastName) {
+    public Doctor findByFirstNameAndLastName(String firstName, String lastName) {
         Optional<Doctor> doctor = doctorRepository.findByFirstNameAndLastName(firstName, lastName);
         if (!doctor.isPresent()) {
-            throw new DoctorNotFoundException("Doctor with first name " + lastName + " and last name " + lastName + " not found");
+            throw new DoctorNotFoundException("Doctor with first name " + firstName + " and last name " + lastName + " not found");
         }
-        return doctor;
+        return doctor.get();
     }
 
 
     @Override
-    public Optional<Doctor> findByEmailAndPassword(String email, String password) throws DoctorNotFoundException {
+    public Doctor findByEmailAndPassword(String email, String password) throws DoctorNotFoundException {
         Optional<Doctor> doctor = doctorRepository.findByEmailAndPassword(email, password);
         if (!doctor.isPresent()) {
             throw new DoctorNotFoundException("Doctor with email " + email + " and password " + password + " not found");
         }
-        return doctor;
+        return doctor.get();
     }
 
     @Override
@@ -72,7 +73,7 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public Optional<Doctor> addDoctor(Doctor doctor) throws InvalidDoctorException {
+    public Doctor addDoctor(Doctor doctor) throws InvalidDoctorException {
         try {
             doctorDetailsValidator.validateDoctorDetails(doctor);
             Optional<Doctor> foundDoctor = doctorRepository.findByEmail(doctor.getEmail());
@@ -87,11 +88,11 @@ public class DoctorServiceImpl implements DoctorService {
         } catch (WrongDetailsException exp) {
             throw new InvalidDoctorException(exp.getMessage());
         }
-        return Optional.of(doctor);
+        return doctor;
     }
 
     @Override
-    public Optional<Doctor> updateDoctor(Doctor doctor) throws InvalidDoctorException, DoctorNotFoundException {
+    public Doctor updateDoctor(Doctor doctor) throws InvalidDoctorException, DoctorNotFoundException {
         Optional<Doctor> doctorToUpdate = doctorRepository.findById(doctor.getDoctorId());
         if (doctorToUpdate.isPresent()) {
             User userToUpdate = new User(doctorToUpdate.get().getDoctorId(), doctorToUpdate.get().getEmail(),
@@ -108,8 +109,18 @@ public class DoctorServiceImpl implements DoctorService {
         } else {
             throw new DoctorNotFoundException("Doctor to add not found");
         }
-        return doctorToUpdate;
+        return doctorToUpdate.get();
     }
+
+    @Override
+    public Doctor updateAppointmentsList(Doctor doctor) throws DoctorNotFoundException {
+        if (!doctorRepository.findById(doctor.getDoctorId()).isPresent()) {
+            throw new OwnerNotFoundException("Owner with id " + doctor.getDoctorId() + " not found");
+        }
+        doctorRepository.save(doctor);
+        return doctor;
+    }
+
 
     @Override
     public void deleteById(long id) throws DoctorNotFoundException {

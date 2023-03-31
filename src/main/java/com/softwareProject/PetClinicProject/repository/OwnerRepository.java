@@ -1,6 +1,5 @@
 package com.softwareProject.PetClinicProject.repository;
 
-import com.softwareProject.PetClinicProject.model.Doctor;
 import com.softwareProject.PetClinicProject.model.Owner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

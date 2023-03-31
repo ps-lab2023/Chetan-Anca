@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,21 +34,21 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Optional<Appointment> findById(long id) throws AppointmentNotFoundException {
+    public Appointment findById(long id) throws AppointmentNotFoundException {
         Optional<Appointment> appointment = appointmentRepository.findById(id);
         if (!appointment.isPresent()) {
             throw new AppointmentNotFoundException("Appointment with id " + id + " not found");
         }
-        return appointment;
+        return appointment.get();
     }
 
     @Override
-    public Optional<Appointment> findByDoctorAndTime(Doctor doctor, LocalDateTime time) throws AppointmentNotFoundException{
+    public Appointment findByDoctorAndTime(Doctor doctor, LocalDateTime time) throws AppointmentNotFoundException{
         Optional<Appointment> appointment = appointmentRepository.findByDoctorAndTime(doctor, time);
         if (!appointment.isPresent()) {
             throw new AppointmentNotFoundException("Appointment with id not found");
         }
-        return appointment;
+        return appointment.get();
     }
 
     @Override
@@ -63,7 +62,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<Appointment> findAllByTime(LocalTime time) {
+    public List<Appointment> findAllByTime(LocalDateTime time) {
         return appointmentRepository.findAllByTime(time);
     }
 
@@ -73,14 +72,16 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Optional<Appointment> addAppointment(Appointment appointment) throws InvalidAppointmentException {
+    public Appointment addAppointment(Appointment appointment) throws InvalidAppointmentException {
+        Doctor doctor;
+        Animal animal;
         try {
-            doctorService.findById(appointment.getDoctor().getDoctorId());
+            doctor = doctorService.findById(appointment.getDoctor().getDoctorId());
         } catch (DoctorNotFoundException exp) {
             throw new InvalidAppointmentException("Doctor not found");
         }
         try {
-            animalService.findById(appointment.getAnimal().getAnimalId());
+            animal = animalService.findById(appointment.getAnimal().getAnimalId());
         } catch (AnimalNotFoundException exp) {
             throw new InvalidAppointmentException("Animal not found");
         }
@@ -89,17 +90,19 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         Optional<Appointment> foundAppointment = appointmentRepository.findByDoctorAndTime(appointment.getDoctor(), appointment.getTime());
         if (!foundAppointment.isPresent()) {
-            appointment.getDoctor().getAppointments().add(appointment);
-            appointment.getAnimal().getAppointments().add(appointment);
+            animal.getAppointments().add(appointment);
+            doctor.getAppointments().add(appointment);
+            appointment.setDoctor(doctorService.updateAppointmentsList(doctor));
+            appointment.setAnimal(animalService.updateAppointmentsList(animal));
             appointmentRepository.save(appointment);
         } else {
             throw new InvalidAppointmentException("Appointment at this time already exists");
         }
-        return Optional.of(appointment);
+        return appointment;
     }
 
     @Override
-    public Optional<Appointment> updateAppointmentTime(Appointment appointment) throws InvalidAppointmentException, AppointmentNotFoundException {
+    public Appointment updateAppointmentTime(Appointment appointment) throws InvalidAppointmentException, AppointmentNotFoundException {
         Optional<Appointment> appointmentToUpdate = appointmentRepository.findById(appointment.getAppointmentId());
         if (appointmentToUpdate.isPresent()) {
             if (appointment.getTime() != null) {
@@ -109,7 +112,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         } else {
             throw new AppointmentNotFoundException("Appointment to update not found");
         }
-        return appointmentToUpdate;
+        return appointmentToUpdate.get();
     }
 
     @Override

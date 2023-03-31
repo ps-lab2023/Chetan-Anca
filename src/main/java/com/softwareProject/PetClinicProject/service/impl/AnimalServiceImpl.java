@@ -28,12 +28,12 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public Optional<Animal> findById(long id) throws AnimalNotFoundException {
+    public Animal findById(long id) throws AnimalNotFoundException {
         Optional<Animal> animal = animalRepository.findById(id);
         if (!animal.isPresent()) {
             throw new AnimalNotFoundException("Animal with id " + id + " not found");
         }
-        return animal;
+        return animal.get();
     }
 
     @Override
@@ -62,26 +62,27 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public Optional<Animal> addAnimal(Animal animal) throws InvalidAnimalException {
+    public Animal addAnimal(Animal animal) throws InvalidAnimalException {
+        Owner owner;
         try {
-            ownerService.findById(animal.getOwner().getOwnerId());
+            owner = ownerService.findById(animal.getOwner().getOwnerId());
         } catch (OwnerNotFoundException exp) {
             throw new InvalidAnimalException("Animal owner not found");
         }
         if (animal.getType() == null) {
             throw new InvalidAnimalException("Animal must have a type");
         }
-
         if (animal.getAge() == 0) {
             throw new InvalidAnimalException("Animal must have an age");
         }
-        animal.getOwner().getAnimals().add(animal);
+        owner.getAnimals().add(animal);
+        animal.setOwner(ownerService.updateAnimalsList(owner));
         animalRepository.save(animal);
-        return Optional.of(animal);
+        return animal;
     }
 
     @Override
-    public Optional<Animal> updateAnimal(Animal animal) throws InvalidAnimalException, AnimalNotFoundException {
+    public Animal updateAnimal(Animal animal) throws InvalidAnimalException, AnimalNotFoundException {
         Optional<Animal> animalToUpdate = animalRepository.findById(animal.getAnimalId());
         if (animalToUpdate.isPresent()) {
             if (animal.getOwner() != null) {
@@ -95,12 +96,25 @@ public class AnimalServiceImpl implements AnimalService {
             if (animal.getName() != null) {
                 animalToUpdate.get().setName(animal.getName());
             }
+            if (animal.getAge() != 0) {
+                animalToUpdate.get().setAge(animal.getAge());
+            }
             animalRepository.save(animalToUpdate.get());
         } else {
             throw new AnimalNotFoundException("Animal to update not found");
         }
-        return animalToUpdate;
+        return animalToUpdate.get();
     }
+
+    @Override
+    public Animal updateAppointmentsList(Animal animal) throws AnimalNotFoundException {
+        if (!animalRepository.findById(animal.getAnimalId()).isPresent()) {
+            throw new OwnerNotFoundException("Owner with id " + animal.getAnimalId() + " not found");
+        }
+        animalRepository.save(animal);
+        return animal;
+    }
+
 
     @Override
     public void deleteById(long id) throws AnimalNotFoundException {

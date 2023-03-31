@@ -1,7 +1,6 @@
 package com.softwareProject.PetClinicProject.validator;
 
 import com.softwareProject.PetClinicProject.exception.WrongDetailsException;
-import com.softwareProject.PetClinicProject.model.Doctor;
 import com.softwareProject.PetClinicProject.model.User;
 import org.springframework.stereotype.Component;
 

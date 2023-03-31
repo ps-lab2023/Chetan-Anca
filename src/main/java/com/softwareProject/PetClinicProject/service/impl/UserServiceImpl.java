@@ -3,7 +3,6 @@ package com.softwareProject.PetClinicProject.service.impl;
 import com.softwareProject.PetClinicProject.exception.InvalidUserException;
 import com.softwareProject.PetClinicProject.exception.UserNotFoundException;
 import com.softwareProject.PetClinicProject.service.UserService;
-import com.softwareProject.PetClinicProject.validator.DoctorDetailsValidator;
 import com.softwareProject.PetClinicProject.exception.WrongDetailsException;
 import com.softwareProject.PetClinicProject.model.User;
 import com.softwareProject.PetClinicProject.model.UserType;
@@ -28,21 +27,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(long id) throws UserNotFoundException {
+    public User findById(long id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (!user.isPresent()) {
             throw new UserNotFoundException("User with id " + id + " not found");
         }
-        return user;
+        return user.get();
     }
 
     @Override
-    public Optional<User> findByEmailAndPassword(String email, String password) throws UserNotFoundException {
+    public User findByEmailAndPassword(String email, String password) throws UserNotFoundException {
         Optional<User> user = userRepository.findByEmailAndPassword(email, password);
         if (!user.isPresent()) {
             throw new UserNotFoundException("User with email " + email + " and password " + password + " not found");
         }
-        return user;
+        return user.get();
     }
 
     @Override
@@ -56,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> addUser(User user) throws InvalidUserException {
+    public User addUser(User user) throws InvalidUserException {
         try {
             userDetailsValidator.validateUserDetails(user);
             Optional<User> userToAdd = userRepository.findByEmailAndPassword(user.getEmail(), user.getPassword());
@@ -66,11 +65,11 @@ public class UserServiceImpl implements UserService {
         } catch (WrongDetailsException exp) {
             throw new InvalidUserException(exp.getMessage());
         }
-        return Optional.of(user);
+        return user;
     }
 
     @Override
-    public Optional<User> updateUser(User user) throws InvalidUserException, UserNotFoundException {
+    public User updateUser(User user) throws InvalidUserException, UserNotFoundException {
         Optional<User> userToUpdate = userRepository.findById(user.getId());
         if (userToUpdate.isPresent()) {
             User finalUser = createUser(user, userToUpdate.get());
@@ -83,7 +82,7 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new UserNotFoundException("User to update not found");
         }
-        return userToUpdate;
+        return userToUpdate.get();
     }
 
     @Override
