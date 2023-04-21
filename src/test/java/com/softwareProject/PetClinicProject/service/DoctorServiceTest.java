@@ -46,7 +46,7 @@ public class DoctorServiceTest {
         Doctor doctor = createValidDoctor();
 
         when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
-        Doctor foundDoctor = doctorService.findById(doctor.getDoctorId());
+        Doctor foundDoctor = doctorService.getDoctorById(doctor.getDoctorId());
 
         assertNotNull(foundDoctor);
         assertEquals(1L, foundDoctor.getDoctorId());
@@ -59,7 +59,7 @@ public class DoctorServiceTest {
         when(doctorRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(DoctorNotFoundException.class, () -> {
-            doctorService.findById(doctor.getDoctorId());
+            doctorService.getDoctorById(doctor.getDoctorId());
         });
     }
 
@@ -68,7 +68,7 @@ public class DoctorServiceTest {
         Doctor doctor = createValidDoctor();
 
         when(doctorRepository.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12")).thenReturn(Optional.of(doctor));
-        Doctor foundDoctor = doctorService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
+        Doctor foundDoctor = doctorService.getDoctorByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
 
         assertNotNull(foundDoctor);
         assertEquals("johnsmith@yahoo.com", foundDoctor.getEmail());
@@ -82,7 +82,7 @@ public class DoctorServiceTest {
         when(doctorRepository.findByEmailAndPassword("marysmith@gmail.ro", "Password@12")).thenReturn(Optional.empty());
 
         assertThrows(DoctorNotFoundException.class, () -> {
-            doctorService.findByEmailAndPassword(doctor.getEmail(), doctor.getPassword());
+            doctorService.getDoctorByEmailAndPassword(doctor.getEmail(), doctor.getPassword());
         });
     }
 
@@ -91,7 +91,7 @@ public class DoctorServiceTest {
         Doctor doctor = createValidDoctor();
 
         when(doctorRepository.findByFirstNameAndLastName("John", "Smith")).thenReturn(Optional.of(doctor));
-        Doctor foundDoctor = doctorService.findByFirstNameAndLastName("John", "Smith");
+        Doctor foundDoctor = doctorService.getDoctorByFirstNameAndLastName("John", "Smith");
 
         assertNotNull(foundDoctor);
         assertEquals("John", foundDoctor.getFirstName());
@@ -105,7 +105,7 @@ public class DoctorServiceTest {
         when(doctorRepository.findByFirstNameAndLastName("Mary", "Smith")).thenReturn(Optional.empty());
 
         assertThrows(DoctorNotFoundException.class, () -> {
-            doctorService.findByFirstNameAndLastName(doctor.getFirstName(), doctor.getLastName());
+            doctorService.getDoctorByFirstNameAndLastName(doctor.getFirstName(), doctor.getLastName());
         });
     }
 
@@ -197,7 +197,7 @@ public class DoctorServiceTest {
         when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
         doNothing().when(doctorRepository).deleteById(doctor.getDoctorId());
 
-        doctorService.deleteById(doctor.getDoctorId());
+        doctorService.deleteDoctorById(doctor.getDoctorId());
         then(doctorRepository).should().deleteById(1L);
     }
 
@@ -208,7 +208,7 @@ public class DoctorServiceTest {
         when(doctorRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(DoctorNotFoundException.class, () -> {
-            doctorService.deleteById(doctor.getDoctorId());
+            doctorService.deleteDoctorById(doctor.getDoctorId());
         });
     }
 

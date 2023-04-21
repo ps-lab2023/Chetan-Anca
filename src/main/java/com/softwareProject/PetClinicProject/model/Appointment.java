@@ -6,6 +6,10 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -23,7 +27,9 @@ public class Appointment implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private Animal animal;
-    private LocalDateTime time;
+    private LocalDateTime date;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<MedicalFacility> medicalFacilities = new ArrayList<>();
 
     @Override
     @Transactional
@@ -33,5 +39,13 @@ public class Appointment implements Serializable {
                 ", doctor=" + doctor.toString() +
                 ", animal=" + animal.toString() +
                 '}';
+    }
+
+    private int computePrice() {
+        int price = 0;
+        for (MedicalFacility medicalFacility : medicalFacilities) {
+            price += medicalFacility.getPrice();
+        }
+        return price;
     }
 }

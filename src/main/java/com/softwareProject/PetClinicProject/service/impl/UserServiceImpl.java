@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(long id) throws UserNotFoundException {
+    public User getUserById(long id) throws UserNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (!user.isPresent()) {
             throw new UserNotFoundException("User with id " + id + " not found");
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByEmailAndPassword(String email, String password) throws UserNotFoundException {
+    public User getUserByEmailAndPassword(String email, String password) throws UserNotFoundException {
         Optional<User> user = userRepository.findByEmailAndPassword(email, password);
         if (!user.isPresent()) {
             throw new UserNotFoundException("User with email " + email + " and password " + password + " not found");
@@ -45,12 +45,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     @Override
-    public List<User> findAllByUserType(UserType userType) {
+    public List<User> getAllUsersByUserType(UserType userType) {
         return userRepository.findAllByUserType(userType);
     }
 
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(long id) throws UserNotFoundException {
+    public void deleteUserById(long id) throws UserNotFoundException {
         Optional<User> userToDelete = userRepository.findById(id);
         if (userToDelete.isPresent()) {
             userRepository.deleteById(id);

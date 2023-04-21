@@ -9,23 +9,24 @@ import java.util.List;
 
 @Component
 public interface DoctorService {
-    Doctor findById(long id) throws DoctorNotFoundException;
+    Doctor getDoctorById(long id) throws DoctorNotFoundException;
 
-    Doctor findByEmail(String email) throws DoctorNotFoundException;
-
-
-    Doctor findByFirstNameAndLastName(String firstName, String lastName) throws DoctorNotFoundException;
+    Doctor getDoctorByEmail(String email) throws DoctorNotFoundException;
 
 
-    Doctor findByEmailAndPassword(String email, String password) throws DoctorNotFoundException;
+    Doctor getDoctorByFirstNameAndLastName(String firstName, String lastName) throws DoctorNotFoundException;
 
-    List<Doctor> findAll();
+    List<Doctor> getAllDoctorsByFirstName(String firstName);
+
+    List<Doctor> getAllDoctorsByLastName(String lastName);
+
+    Doctor getDoctorByEmailAndPassword(String email, String password) throws DoctorNotFoundException;
+
+    List<Doctor> findAllDoctors();
 
     Doctor addDoctor(Doctor doctor) throws InvalidDoctorException;
 
     Doctor updateDoctor(Doctor doctor) throws InvalidDoctorException, DoctorNotFoundException;
 
-    Doctor updateAppointmentsList(Doctor doctor) throws DoctorNotFoundException;
-
-    void deleteById(long id) throws DoctorNotFoundException;
+    void deleteDoctorById(long id) throws DoctorNotFoundException;
 }

@@ -44,7 +44,7 @@ public class UserServiceTest {
         User user = createValidUser();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        User foundUser = userService.findById(user.getId());
+        User foundUser = userService.getUserById(user.getId());
 
         assertNotNull(foundUser);
         assertEquals(1L, foundUser.getId());
@@ -57,7 +57,7 @@ public class UserServiceTest {
         when(userRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> {
-            userService.findById(user.getId());
+            userService.getUserById(user.getId());
         });
     }
 
@@ -66,7 +66,7 @@ public class UserServiceTest {
         User user = createValidUser();
 
         when(userRepository.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12")).thenReturn(Optional.of(user));
-        User foundUser = userService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
+        User foundUser = userService.getUserByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
 
         assertNotNull(foundUser);
         assertEquals("johnsmith@yahoo.com", foundUser.getEmail());
@@ -80,7 +80,7 @@ public class UserServiceTest {
         when(userRepository.findByEmailAndPassword("marysmith@gmail.ro", "Password@12")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> {
-            userService.findByEmailAndPassword(user.getEmail(), user.getPassword());
+            userService.getUserByEmailAndPassword(user.getEmail(), user.getPassword());
         });
     }
 
@@ -91,7 +91,7 @@ public class UserServiceTest {
         User user3 = new User(3L, "dragusandre@gmail.com", "MyPassword%12", UserType.OWNER);
 
         when(userRepository.findAllByUserType(UserType.DOCTOR)).thenReturn(List.of(user, user2));
-        List<User> users = userService.findAllByUserType(UserType.DOCTOR);
+        List<User> users = userService.getAllUsersByUserType(UserType.DOCTOR);
 
         assertNotNull(users);
         assertEquals(2, users.size());
@@ -175,7 +175,7 @@ public class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         doNothing().when(userRepository).deleteById(user.getId());
 
-        userService.deleteById(user.getId());
+        userService.deleteUserById(user.getId());
         then(userRepository).should().deleteById(1L);
     }
 
@@ -186,7 +186,7 @@ public class UserServiceTest {
         when(userRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> {
-            userService.deleteById(user.getId());
+            userService.deleteUserById(user.getId());
         });
     }
 

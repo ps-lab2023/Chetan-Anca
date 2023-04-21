@@ -10,17 +10,17 @@ import java.util.List;
 
 @Component
 public interface UserService {
-    User findById(long id) throws UserNotFoundException;
+    User getUserById(long id) throws UserNotFoundException;
 
-    User findByEmailAndPassword(String email, String password) throws UserNotFoundException;
+    User getUserByEmailAndPassword(String email, String password) throws UserNotFoundException;
 
-    List<User> findAll();
+    List<User> getAllUsers();
 
-    List<User> findAllByUserType(UserType userType);
+    List<User> getAllUsersByUserType(UserType userType);
 
     User addUser(User user) throws InvalidUserException;
 
     User updateUser(User user) throws UserNotFoundException, InvalidUserException;
 
-    void  deleteById(long id) throws UserNotFoundException;
+    void deleteUserById(long id) throws UserNotFoundException;
 }

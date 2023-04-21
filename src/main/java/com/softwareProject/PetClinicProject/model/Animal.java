@@ -1,6 +1,5 @@
 package com.softwareProject.PetClinicProject.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
@@ -27,7 +26,7 @@ public class Animal implements Serializable {
     private AnimalType type;
     private String breed;
     private int age;
-    @JsonIgnore
+    private float weight;
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "animal")
     private List<Appointment> appointments = new ArrayList<>();
 

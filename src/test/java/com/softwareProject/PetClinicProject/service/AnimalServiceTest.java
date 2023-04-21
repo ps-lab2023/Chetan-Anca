@@ -45,7 +45,7 @@ public class AnimalServiceTest {
         animal.setAnimalId(1L);
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
 
-        Animal foundAnimal = animalService.findById(animal.getAnimalId());
+        Animal foundAnimal = animalService.getAnimalById(animal.getAnimalId());
 
         assertNotNull(foundAnimal);
         assertEquals(1L, foundAnimal.getAnimalId());
@@ -58,7 +58,7 @@ public class AnimalServiceTest {
         when(animalRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(AnimalNotFoundException.class, () -> {
-            animalService.findById(animal.getAnimalId());
+            animalService.getAnimalById(animal.getAnimalId());
         });
     }
 
@@ -69,8 +69,8 @@ public class AnimalServiceTest {
         animal.setAnimalId(1L);
         animal.setOwner(owner);
 
-        when(animalRepository.findAllByOwner(owner)).thenReturn(List.of(animal));
-        List<Animal> animals = animalService.findAllByOwner(owner);
+        when(animalRepository.findAllByOwnerFirstNameAndOwnerLastName(owner.getFirstName(), owner.getLastName())).thenReturn(List.of(animal));
+        List<Animal> animals = animalService.getAllByOwnerFirstNameAndOwnerLastName(owner.getFirstName(), owner.getLastName());
 
         assertNotNull(animals);
         assertEquals(1, animals.size());
@@ -89,7 +89,7 @@ public class AnimalServiceTest {
         animal1.setType(AnimalType.DOG);
 
         when(animalRepository.findAllByType(AnimalType.CAT)).thenReturn(List.of(animal));
-        List<Animal> animals = animalService.findAllByType(AnimalType.CAT);
+        List<Animal> animals = animalService.getAllAnimalsByType(AnimalType.CAT);
 
         assertNotNull(animals);
         assertEquals(1, animals.size());
@@ -110,7 +110,7 @@ public class AnimalServiceTest {
         animal1.setAge(5);
 
         when(animalRepository.findAllByAgeGreaterThan(4)).thenReturn(List.of(animal1));
-        List<Animal> animals = animalService.findAllByAgeGraterThan(4);
+        List<Animal> animals = animalService.getAllAnimalsByAgeGraterThan(4);
 
         assertNotNull(animals);
         assertEquals(1, animals.size());
@@ -140,7 +140,7 @@ public class AnimalServiceTest {
         animal2.setAge(2);
 
         when(animalRepository.findAllByName("Mitzu")).thenReturn(List.of(animal, animal1));
-        List<Animal> animals = animalService.findAllByName("Mitzu");
+        List<Animal> animals = animalService.getAllAnimalsByName("Mitzu");
 
         assertNotNull(animals);
         assertEquals(2, animals.size());
@@ -174,13 +174,13 @@ public class AnimalServiceTest {
         animal.setType(AnimalType.DOG);
         animal.setAge(2);
 
-        willThrow(new OwnerNotFoundException()).given(ownerService).findById(owner.getOwnerId());
+        willThrow(new OwnerNotFoundException()).given(ownerService).getOwnerById(owner.getOwnerId());
 
         assertThrows(InvalidAnimalException.class, () -> {
             animalService.addAnimal(animal);
         });
 
-        then(ownerService).should().findById(400L);
+        then(ownerService).should().getOwnerById(400L);
     }
 
     @Test
@@ -255,7 +255,7 @@ public class AnimalServiceTest {
         animalUpdate.setName("Haze");
 
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
-        willThrow(new OwnerNotFoundException()).given(ownerService).findById(ownerUpdate.getOwnerId());
+        willThrow(new OwnerNotFoundException()).given(ownerService).getOwnerById(ownerUpdate.getOwnerId());
 
         assertThrows(InvalidAnimalException.class, () -> {
             animalService.updateAnimal(animalUpdate);
@@ -275,7 +275,7 @@ public class AnimalServiceTest {
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
         doNothing().when(animalRepository).deleteById(animal.getAnimalId());
 
-        animalService.deleteById(animal.getAnimalId());
+        animalService.deleteAnimalById(animal.getAnimalId());
         then(animalRepository).should().deleteById(1L);
     }
 
@@ -293,7 +293,7 @@ public class AnimalServiceTest {
         doNothing().when(animalRepository).deleteById(animal.getAnimalId());
 
         assertThrows(AnimalNotFoundException.class, () -> {
-            animalService.deleteById(animal.getAnimalId());
+            animalService.deleteAnimalById(animal.getAnimalId());
         });
     }
 }

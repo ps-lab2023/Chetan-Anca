@@ -1,6 +1,5 @@
 package com.softwareProject.PetClinicProject.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
@@ -23,9 +22,8 @@ public class Owner implements Serializable {
     private String email;
     private String password;
     private String phoneNumber;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "owner")
-    private List<Animal> animals = new ArrayList<>();;
+    private List<Animal> animals = new ArrayList<>();
 
     @Override
     @Transactional

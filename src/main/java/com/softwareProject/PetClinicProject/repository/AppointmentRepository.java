@@ -14,13 +14,17 @@ import java.util.Optional;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     Optional<Appointment> findById(long id);
 
-    Optional<Appointment> findByDoctorAndTime(Doctor doctor, LocalDateTime time);
+    Optional<Appointment> findByDoctorFirstNameAndDoctorLastNameAndDate(String firstName, String lastName, LocalDateTime date);
 
-    List<Appointment> findAllByDoctor(Doctor doctor);
+    List<Appointment> findAllByDoctorFirstNameAndDoctorLastName(String firstName, String lastName);
 
-    List<Appointment> findAllByAnimal(Animal animal);
+    List<Appointment> findAllByAnimalOwnerOwnerId(long id);
 
-    List<Appointment> findAllByTime(LocalDateTime time);
+    List<Appointment> findAllByDoctorDoctorId(long id);
+
+    List<Appointment> findAllByAnimalName(String name);
+
+    List<Appointment> findAllByDate(LocalDateTime date);
 
     List<Appointment> findAll();
 }

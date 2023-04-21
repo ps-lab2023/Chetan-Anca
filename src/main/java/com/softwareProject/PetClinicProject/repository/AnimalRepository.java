@@ -15,11 +15,15 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
 
     List<Animal> findAllByName(String name);
 
-    List<Animal> findAllByOwner(Owner owner);
+    List<Animal> findAllByOwnerFirstNameAndOwnerLastName(String firstName, String lastName);
+
+    List<Animal> findAllByOwnerOwnerId(long ownerId);
 
     List<Animal> findAllByType(AnimalType animalType);
 
     List<Animal> findAllByAgeGreaterThan(int age);
+
+    List<Animal> findAllByWeightLessThan(float weight);
 
     List<Animal> findAll();
 }

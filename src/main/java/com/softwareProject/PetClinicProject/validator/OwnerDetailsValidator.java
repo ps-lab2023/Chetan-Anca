@@ -4,7 +4,6 @@ import com.softwareProject.PetClinicProject.exception.WrongDetailsException;
 import com.softwareProject.PetClinicProject.model.Owner;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,18 +43,6 @@ public class OwnerDetailsValidator {
     private void validateLastName(String lastName) {
         if (lastName == null || lastName.isBlank() || lastName.isEmpty()) {
             throw new WrongDetailsException("Null or blank last name");
-        }
-    }
-
-    private void validateStartScheduleTime(LocalTime startScheduleTime) {
-        if (startScheduleTime == null) {
-            throw new WrongDetailsException("Null start startScheduleTime");
-        }
-    }
-
-    private void validateEndScheduleTime(LocalTime endScheduleTime) {
-        if (endScheduleTime == null) {
-            throw new WrongDetailsException("Null start endScheduleTime");
         }
     }
 

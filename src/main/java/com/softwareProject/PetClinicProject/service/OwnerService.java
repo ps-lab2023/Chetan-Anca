@@ -9,22 +9,24 @@ import java.util.List;
 
 @Component
 public interface OwnerService {
-    Owner findById(long id) throws OwnerNotFoundException;
+    Owner getOwnerById(long id) throws OwnerNotFoundException;
 
-    Owner findByEmail(String email) throws OwnerNotFoundException;
+    Owner getOwnerByEmail(String email) throws OwnerNotFoundException;
 
-    Owner findByFirstNameAndLastName(String firstName, String lastName) throws OwnerNotFoundException;
+    Owner getOwnerByFirstNameAndLastName(String firstName, String lastName) throws OwnerNotFoundException;
 
-    Owner findByEmailAndPassword(String email, String password) throws OwnerNotFoundException;
+    List<Owner> getAllByFirstNameContaining(String firstName);
 
-    List<Owner> findAll();
+    List<Owner> getAllByLastNameContaining(String lastName);
+
+
+    Owner getOwnerByEmailAndPassword(String email, String password) throws OwnerNotFoundException;
+
+    List<Owner> getAllOwners();
 
     Owner addOwner(Owner owner) throws InvalidOwnerException;
 
     Owner updateOwner(Owner owner) throws InvalidOwnerException, OwnerNotFoundException;
 
-    Owner updateAnimalsList(Owner owner) throws OwnerNotFoundException;
-
-    void deleteById(long id) throws OwnerNotFoundException;
-
+    void deleteOwnerById(long id) throws OwnerNotFoundException;
 }

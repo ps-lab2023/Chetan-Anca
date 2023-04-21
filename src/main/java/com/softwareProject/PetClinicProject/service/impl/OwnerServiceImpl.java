@@ -30,7 +30,7 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public Owner findById(long id) throws OwnerNotFoundException {
+    public Owner getOwnerById(long id) throws OwnerNotFoundException {
         Optional<Owner> owner = ownerRepository.findById(id);
         if (!owner.isPresent()) {
             throw new OwnerNotFoundException("Owner with id " + id + " not found");
@@ -39,7 +39,7 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public Owner findByEmail(String email) throws OwnerNotFoundException {
+    public Owner getOwnerByEmail(String email) throws OwnerNotFoundException {
         Optional<Owner> owner = ownerRepository.findByEmail(email);
         if (!owner.isPresent()) {
             throw new OwnerNotFoundException("Owner with email " + email + " not found");
@@ -49,7 +49,7 @@ public class OwnerServiceImpl implements OwnerService {
 
 
     @Override
-    public Owner findByFirstNameAndLastName(String firstName, String lastName) throws OwnerNotFoundException {
+    public Owner getOwnerByFirstNameAndLastName(String firstName, String lastName) throws OwnerNotFoundException {
         Optional<Owner> owner = ownerRepository.findByFirstNameAndLastName(firstName, lastName);
         if (!owner.isPresent()) {
             throw new OwnerNotFoundException("Owner with first name " + lastName + " and last name " + lastName + " not found");
@@ -57,9 +57,19 @@ public class OwnerServiceImpl implements OwnerService {
         return owner.get();
     }
 
+    @Override
+    public List<Owner> getAllByFirstNameContaining(String firstName) {
+        return ownerRepository.findAllByFirstNameContaining(firstName);
+    }
 
     @Override
-    public Owner findByEmailAndPassword(String email, String password) throws OwnerNotFoundException {
+    public List<Owner> getAllByLastNameContaining(String lastName) {
+        return ownerRepository.findAllByLastNameContaining(lastName);
+    }
+
+
+    @Override
+    public Owner getOwnerByEmailAndPassword(String email, String password) throws OwnerNotFoundException {
         Optional<Owner> owner = ownerRepository.findByEmailAndPassword(email, password);
         if (!owner.isPresent()) {
             throw new OwnerNotFoundException("Owner with email " + email + " and password " + password + " not found");
@@ -68,7 +78,7 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public List<Owner> findAll() {
+    public List<Owner> getAllOwners() {
         return ownerRepository.findAll();
     }
 
@@ -94,11 +104,12 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public Owner updateOwner(Owner owner) throws InvalidOwnerException, OwnerNotFoundException {
         Optional<Owner> ownerToUpdate = ownerRepository.findById(owner.getOwnerId());
+        Owner finalOwner;
         if (ownerToUpdate.isPresent()) {
             User userToUpdate = new User(ownerToUpdate.get().getOwnerId(), ownerToUpdate.get().getEmail(),
                     ownerToUpdate.get().getPassword(), UserType.OWNER);
             User finalUser = createUser(owner, userToUpdate);
-            Owner finalOwner = createOwner(owner, ownerToUpdate.get());
+            finalOwner = createOwner(owner, ownerToUpdate.get());
             try {
                 ownerDetailsValidator.validateOwnerDetails(finalOwner);
             } catch (WrongDetailsException exp) {
@@ -109,23 +120,14 @@ public class OwnerServiceImpl implements OwnerService {
         } else {
             throw new OwnerNotFoundException("Owner to update not found");
         }
-        return ownerToUpdate.get();
+        return finalOwner;
     }
 
     @Override
-    public Owner updateAnimalsList(Owner owner) throws OwnerNotFoundException {
-        if (!ownerRepository.findById(owner.getOwnerId()).isPresent()) {
-            throw new OwnerNotFoundException("Owner with id " + owner.getOwnerId() + " not found");
-        }
-        ownerRepository.save(owner);
-        return owner;
-    }
-
-    @Override
-    public void deleteById(long id) throws OwnerNotFoundException {
+    public void deleteOwnerById(long id) throws OwnerNotFoundException {
         Optional<Owner> ownerToDelete = ownerRepository.findById(id);
         if (ownerToDelete.isPresent()) {
-            userService.deleteById(id);
+            userService.deleteUserById(id);
             ownerRepository.deleteById(id);
         } else {
             throw new OwnerNotFoundException("Owner to delete not found");

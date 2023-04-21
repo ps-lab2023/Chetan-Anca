@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ public class AppointmentServiceTest {
         appointment.setAppointmentId(1L);
 
         when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
-        Appointment foundAppointment = appointmentService.findById(appointment.getAppointmentId());
+        Appointment foundAppointment = appointmentService.getAppointmentById(appointment.getAppointmentId());
 
         assertNotNull(foundAppointment);
         assertEquals(1L, foundAppointment.getAppointmentId());
@@ -60,7 +61,7 @@ public class AppointmentServiceTest {
         when(appointmentRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(AppointmentNotFoundException.class, () -> {
-            appointmentService.findById(appointment.getAppointmentId());
+            appointmentService.getAppointmentById(appointment.getAppointmentId());
         });
     }
 
@@ -75,8 +76,8 @@ public class AppointmentServiceTest {
         doctor.getAppointments().add(appointment1);
         doctor.getAppointments().add(appointment2);
 
-        when(appointmentRepository.findAllByDoctor(doctor)).thenReturn(List.of(appointment1, appointment2));
-        List<Appointment> appointments = appointmentService.findAllByDoctor(doctor);
+        when(appointmentRepository.findAllByDoctorFirstNameAndDoctorLastName(doctor.getFirstName(), doctor.getLastName())).thenReturn(List.of(appointment1, appointment2));
+        List<Appointment> appointments = appointmentService.getAllByDoctorFirstNameAndDoctorLastName(doctor.getFirstName(), doctor.getLastName());
 
         assertNotNull(appointments);
         assertEquals(2, appointments.size());
@@ -86,7 +87,7 @@ public class AppointmentServiceTest {
     @Test
     public void givenAnimal_whenFindByAnimal_thenFindAppointments() {
         Owner owner = new Owner(2L, "Mary", "Poppins", "marypoppins@gmail.com", "Password%12", "0742365986", new ArrayList<>());
-        Animal animal = new Animal(1L, "Haze", owner, AnimalType.DOG, "Bulldog", 2, new ArrayList<>());
+        Animal animal = new Animal(1L, "Haze", owner, AnimalType.DOG, "Bulldog", 2, 10.2f, new ArrayList<>());
         Appointment appointment1 = new Appointment();
         appointment1.setAnimal(animal);
         Appointment appointment2 = new Appointment();
@@ -94,8 +95,8 @@ public class AppointmentServiceTest {
         animal.getAppointments().add(appointment1);
         animal.getAppointments().add(appointment2);
 
-        when(appointmentRepository.findAllByAnimal(animal)).thenReturn(List.of(appointment1, appointment2));
-        List<Appointment> appointments = appointmentService.findAllByAnimal(animal);
+        when(appointmentRepository.findAllByAnimalName(animal.getName())).thenReturn(List.of(appointment1, appointment2));
+        List<Appointment> appointments = appointmentService.getAllByAnimalName(animal.getName());
 
         assertNotNull(appointments);
         assertEquals(2, appointments.size());
@@ -108,11 +109,11 @@ public class AppointmentServiceTest {
         Doctor doctor = new Doctor(1L, "John", "Smith", "johnsmith@yahoo.com", "MyPassword@12",
                 "0745382312", LocalTime.of(8, 0, 0), LocalTime.of(14, 0, 0), new ArrayList<>());
         Owner owner = new Owner(2L, "Mary", "Poppins", "marypoppins@gmail.com", "Password%12", "0742365986", new ArrayList<>());
-        Animal animal = new Animal(1L, "Haze", owner, AnimalType.DOG, "Bulldog", 2, new ArrayList<>());
+        Animal animal = new Animal(1L, "Haze", owner, AnimalType.DOG, "Bulldog", 2, 14.5f, new ArrayList<>());
         appointment.setAppointmentId(1L);
         appointment.setDoctor(doctor);
         appointment.setAnimal(animal);
-        appointment.setTime(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
+        appointment.setDate(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
 
         when(appointmentRepository.save(appointment)).thenReturn(appointment);
         Appointment savedAppointment = appointmentService.addAppointment(appointment);
@@ -126,13 +127,13 @@ public class AppointmentServiceTest {
         Doctor doctor = new Doctor(400L, "John", "Doe", "johndoe@yahoo.com", "MyPassword@12",
                 "0745382312", LocalTime.of(8, 0, 0), LocalTime.of(14, 0, 0), new ArrayList<>());
         Owner owner = new Owner(2L, "Mary", "Poppins", "marypoppins@gmail.com", "Password%12", "0742365986", new ArrayList<>());
-        Animal animal = new Animal(1L, "Haze", owner, AnimalType.DOG, "Bulldog", 2, new ArrayList<>());
+        Animal animal = new Animal(1L, "Haze", owner, AnimalType.DOG, "Bulldog", 2, 12.3f, new ArrayList<>());
         appointment.setAppointmentId(1L);
         appointment.setDoctor(doctor);
         appointment.setAnimal(animal);
-        appointment.setTime(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
+        appointment.setDate(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
 
-        willThrow(new DoctorNotFoundException()).given(doctorService).findById(doctor.getDoctorId());
+        willThrow(new DoctorNotFoundException()).given(doctorService).getDoctorById(doctor.getDoctorId());
 
         assertThrows(InvalidAppointmentException.class, () -> {
             appointmentService.addAppointment(appointment);
@@ -144,13 +145,13 @@ public class AppointmentServiceTest {
         Doctor doctor = new Doctor(1L, "John", "Smith", "johnsmith@yahoo.com", "MyPassword@12",
                 "0745382312", LocalTime.of(8, 0, 0), LocalTime.of(14, 0, 0), new ArrayList<>());
         Owner owner = new Owner(2L, "Mary", "Poppins", "marypoppins@gmail.com", "Password%12", "0742365986", new ArrayList<>());
-        Animal animal = new Animal(400L, "Mitzu", owner, AnimalType.CAT, "American Shorthair", 2, new ArrayList<>());
+        Animal animal = new Animal(400L, "Mitzu", owner, AnimalType.CAT, "American Shorthair", 2, 5.6f, new ArrayList<>());
         appointment.setAppointmentId(1L);
         appointment.setDoctor(doctor);
         appointment.setAnimal(animal);
-        appointment.setTime(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
+        appointment.setDate(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
 
-        willThrow(new AnimalNotFoundException()).given(animalService).findById(animal.getAnimalId());
+        willThrow(new AnimalNotFoundException()).given(animalService).getAnimalById(animal.getAnimalId());
 
         assertThrows(InvalidAppointmentException.class, () -> {
             appointmentService.addAppointment(appointment);
@@ -162,25 +163,25 @@ public class AppointmentServiceTest {
         Doctor doctor = new Doctor(1L, "John", "Smith", "johnsmith@yahoo.com", "MyPassword@12",
                 "0745382312", LocalTime.of(8, 0, 0), LocalTime.of(14, 0, 0), new ArrayList<>());
         Owner owner = new Owner(2L, "Mary", "Poppins", "marypoppins@gmail.com", "Password%12", "0742365986", new ArrayList<>());
-        Animal animal = new Animal(1L, "Haze", owner, AnimalType.CAT, "American Shorthair", 2, new ArrayList<>());
+        Animal animal = new Animal(1L, "Haze", owner, AnimalType.CAT, "American Shorthair", 2, 5.6f, new ArrayList<>());
         appointment.setAppointmentId(1L);
         appointment.setDoctor(doctor);
         appointment.setAnimal(animal);
-        appointment.setTime(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
+        appointment.setDate(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
         Appointment updateAppointment = new Appointment();
         updateAppointment.setAppointmentId(1L);
-        updateAppointment.setTime(LocalDateTime.of(2023, 4, 23, 14, 16, 00));
+        updateAppointment.setDate(LocalDateTime.of(2023, 4, 23, 14, 16, 00));
         Appointment appointmentToReturn = new Appointment(1L, doctor,
-                animal, LocalDateTime.of(2023, 4, 23, 14, 16, 00));
+                animal, LocalDateTime.of(2023, 4, 23, 14, 16, 00), new ArrayList<>());
 
         when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
         when(appointmentRepository.save(appointment)).thenReturn(appointmentToReturn);
 
-        Appointment updatedAppointment = appointmentService.updateAppointmentTime(updateAppointment);
+        Appointment updatedAppointment = appointmentService.updateAppointment(updateAppointment);
 
         assertNotNull(updatedAppointment);
         assertEquals(animal, updatedAppointment.getAnimal());
-        assertEquals(LocalDateTime.of(2023, 4, 23, 14, 16, 00), updatedAppointment.getTime());
+        assertEquals(LocalDateTime.of(2023, 4, 23, 14, 16, 00), updatedAppointment.getDate());
     }
 
     @Test
@@ -190,7 +191,7 @@ public class AppointmentServiceTest {
         when(appointmentRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(AppointmentNotFoundException.class, () -> {
-            appointmentService.updateAppointmentTime(appointment);
+            appointmentService.updateAppointment(appointment);
         });
     }
 
@@ -199,16 +200,16 @@ public class AppointmentServiceTest {
         Doctor doctor = new Doctor(1L, "John", "Smith", "johnsmith@yahoo.com", "MyPassword@12",
                 "0745382312", LocalTime.of(8, 0, 0), LocalTime.of(14, 0, 0), new ArrayList<>());
         Owner owner = new Owner(2L, "Mary", "Poppins", "marypoppins@gmail.com", "Password%12", "0742365986", new ArrayList<>());
-        Animal animal = new Animal(1L, "Haze", owner, AnimalType.CAT, "American Shorthair", 2, new ArrayList<>());
+        Animal animal = new Animal(1L, "Haze", owner, AnimalType.CAT, "American Shorthair", 2, 10.5f, new ArrayList<>());
         appointment.setAppointmentId(1L);
         appointment.setDoctor(doctor);
         appointment.setAnimal(animal);
-        appointment.setTime(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
+        appointment.setDate(LocalDateTime.of(2023, 4, 23, 14, 15, 00));
 
         when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
         doNothing().when(appointmentRepository).deleteById(appointment.getAppointmentId());
 
-        appointmentService.deleteById(appointment.getAppointmentId());
+        appointmentService.deleteAppointmentById(appointment.getAppointmentId());
         then(appointmentRepository).should().deleteById(1L);
     }
 
@@ -219,7 +220,7 @@ public class AppointmentServiceTest {
         when(appointmentRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(AppointmentNotFoundException.class, () -> {
-            appointmentService.deleteById(appointment.getAppointmentId());
+            appointmentService.deleteAppointmentById(appointment.getAppointmentId());
         });
     }
 }

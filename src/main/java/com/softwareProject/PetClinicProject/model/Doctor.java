@@ -1,6 +1,9 @@
 package com.softwareProject.PetClinicProject.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.*;
@@ -26,7 +29,6 @@ public class Doctor implements Serializable {
     private String phoneNumber;
     private LocalTime startScheduleTime;
     private LocalTime endScheduleTime;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "doctor")
     private List<Appointment> appointments = new ArrayList<>();
 

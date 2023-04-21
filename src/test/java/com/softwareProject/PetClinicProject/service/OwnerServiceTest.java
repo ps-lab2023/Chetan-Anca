@@ -44,7 +44,7 @@ public class OwnerServiceTest {
         Owner owner = createValidOwner();
 
         when(ownerRepository.findById(1L)).thenReturn(Optional.of(owner));
-        Owner foundOwner = ownerService.findById(owner.getOwnerId());
+        Owner foundOwner = ownerService.getOwnerById(owner.getOwnerId());
 
         assertNotNull(foundOwner);
         assertEquals(1L, foundOwner.getOwnerId());
@@ -57,7 +57,7 @@ public class OwnerServiceTest {
         when(ownerRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(OwnerNotFoundException.class, () -> {
-            ownerService.findById(owner.getOwnerId());
+            ownerService.getOwnerById(owner.getOwnerId());
         });
     }
 
@@ -66,7 +66,7 @@ public class OwnerServiceTest {
         Owner owner = createValidOwner();
 
         when(ownerRepository.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12")).thenReturn(Optional.of(owner));
-        Owner foundOwner = ownerService.findByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
+        Owner foundOwner = ownerService.getOwnerByEmailAndPassword("johnsmith@yahoo.com", "MyPassword.12");
 
         assertNotNull(foundOwner);
         assertEquals("johnsmith@yahoo.com", foundOwner.getEmail());
@@ -80,7 +80,7 @@ public class OwnerServiceTest {
         when(ownerRepository.findByEmailAndPassword("marysmith@gmail.ro", "Password@12")).thenReturn(Optional.empty());
 
         assertThrows(OwnerNotFoundException.class, () -> {
-            ownerService.findByEmailAndPassword(owner.getEmail(), owner.getPassword());
+            ownerService.getOwnerByEmailAndPassword(owner.getEmail(), owner.getPassword());
         });
     }
 
@@ -103,7 +103,7 @@ public class OwnerServiceTest {
         when(ownerRepository.findByFirstNameAndLastName("Mary", "Smith")).thenReturn(Optional.empty());
 
         assertThrows(OwnerNotFoundException.class, () -> {
-            ownerService.findByFirstNameAndLastName(owner.getFirstName(), owner.getLastName());
+            ownerService.getOwnerByFirstNameAndLastName(owner.getFirstName(), owner.getLastName());
         });
     }
 
@@ -191,7 +191,7 @@ public class OwnerServiceTest {
         when(ownerRepository.findById(1L)).thenReturn(Optional.of(owner));
         doNothing().when(ownerRepository).deleteById(owner.getOwnerId());
 
-        ownerService.deleteById(owner.getOwnerId());
+        ownerService.deleteOwnerById(owner.getOwnerId());
         then(ownerRepository).should().deleteById(1L);
     }
 
@@ -202,7 +202,7 @@ public class OwnerServiceTest {
         when(ownerRepository.findById(400L)).thenReturn(Optional.empty());
 
         assertThrows(OwnerNotFoundException.class, () -> {
-            ownerService.deleteById(owner.getOwnerId());
+            ownerService.deleteOwnerById(owner.getOwnerId());
         });
     }
 

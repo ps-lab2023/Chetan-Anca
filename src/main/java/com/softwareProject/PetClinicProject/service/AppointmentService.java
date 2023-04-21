@@ -2,9 +2,7 @@ package com.softwareProject.PetClinicProject.service;
 
 import com.softwareProject.PetClinicProject.exception.AppointmentNotFoundException;
 import com.softwareProject.PetClinicProject.exception.InvalidAppointmentException;
-import com.softwareProject.PetClinicProject.model.Animal;
 import com.softwareProject.PetClinicProject.model.Appointment;
-import com.softwareProject.PetClinicProject.model.Doctor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -12,21 +10,26 @@ import java.util.List;
 
 @Component
 public interface AppointmentService {
-    Appointment findById(long id) throws AppointmentNotFoundException;
+    Appointment getAppointmentById(long id) throws AppointmentNotFoundException;
 
-    Appointment findByDoctorAndTime(Doctor doctor, LocalDateTime time) throws AppointmentNotFoundException;
+    Appointment getByDoctorFirstNameAndDoctorLastNameAndDate(String firstName, String lastName, LocalDateTime date) throws AppointmentNotFoundException;
 
-    List<Appointment> findAllByAnimal(Animal animal);
+    List<Appointment> getAllByAnimalName(String name);
 
-    List<Appointment> findAllByDoctor(Doctor doctor);
+    List<Appointment> getAllByDoctorFirstNameAndDoctorLastName(String firstName, String lastName);
 
-    List<Appointment> findAllByTime(LocalDateTime time);
+    List<Appointment> getAllAppointmentsByTime(LocalDateTime date);
 
-    List<Appointment> findAll();
+    List<Appointment> getAllByAnimalOwnerId(long id);
+
+    List<Appointment> getAllByDoctorId(long id);
+
+
+    List<Appointment> getAppointmentsAll();
 
     Appointment addAppointment(Appointment appointment) throws InvalidAppointmentException;
 
-    Appointment updateAppointmentTime(Appointment appointment) throws InvalidAppointmentException, AppointmentNotFoundException;
+    Appointment updateAppointment(Appointment appointment) throws InvalidAppointmentException, AppointmentNotFoundException;
 
-    void deleteById(long id) throws AppointmentNotFoundException;
+    void deleteAppointmentById(long id) throws AppointmentNotFoundException;
 }
