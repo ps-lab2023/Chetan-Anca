@@ -4,6 +4,8 @@ import com.softwareProject.PetClinicProject.model.UserType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString
@@ -15,4 +17,8 @@ public class UserDto {
     private String password;
     @Enumerated(EnumType.STRING)
     private UserType userType;
+    private boolean logged;
+
+    private LocalDateTime lastLoggedIn;
+    private LocalDateTime lastLoggedOut;
 }

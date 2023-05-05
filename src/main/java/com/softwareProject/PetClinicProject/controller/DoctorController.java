@@ -93,6 +93,13 @@ public class DoctorController {
         return ResponseEntity.status(HttpStatus.OK).body(doctorDtoReturned);
     }
 
+    @PutMapping("/updatePassword")
+    public ResponseEntity updateDoctorPassword(@RequestParam long id, @RequestParam String password) {
+        Doctor doctorReturned = doctorService.updatePassword(id, password);
+        DoctorDto doctorDtoReturned = modelMapper.map(doctorReturned, DoctorDto.class);
+        return ResponseEntity.status(HttpStatus.OK).body(doctorDtoReturned);
+    }
+
     @DeleteMapping("/delete")
     public void deleteDoctor(@RequestParam long id) {
         doctorService.deleteDoctorById(id);

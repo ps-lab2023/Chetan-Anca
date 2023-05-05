@@ -28,5 +28,7 @@ public interface OwnerService {
 
     Owner updateOwner(Owner owner) throws InvalidOwnerException, OwnerNotFoundException;
 
+    Owner updatePassword(long id, String password) throws InvalidOwnerException, OwnerNotFoundException;
+
     void deleteOwnerById(long id) throws OwnerNotFoundException;
 }

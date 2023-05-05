@@ -9,8 +9,10 @@ import com.softwareProject.PetClinicProject.model.UserType;
 import com.softwareProject.PetClinicProject.repository.OwnerRepository;
 import com.softwareProject.PetClinicProject.validator.OwnerDetailsValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,9 @@ public class OwnerServiceImpl implements OwnerService {
     private OwnerDetailsValidator ownerDetailsValidator;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public OwnerServiceImpl(OwnerRepository ownerRepository, OwnerDetailsValidator ownerDetailsValidator, UserService userService) {
         this.ownerRepository = ownerRepository;
@@ -46,7 +51,6 @@ public class OwnerServiceImpl implements OwnerService {
         }
         return owner.get();
     }
-
 
     @Override
     public Owner getOwnerByFirstNameAndLastName(String firstName, String lastName) throws OwnerNotFoundException {
@@ -88,7 +92,7 @@ public class OwnerServiceImpl implements OwnerService {
             ownerDetailsValidator.validateOwnerDetails(owner);
             Optional<Owner> foundOwner = ownerRepository.findByEmail(owner.getEmail());
             if (!foundOwner.isPresent()) {
-                User user = new User(owner.getOwnerId(), owner.getEmail(), owner.getPassword(), UserType.OWNER);
+                User user = new User(owner.getOwnerId(), owner.getEmail(), owner.getPassword(), UserType.OWNER, false, null, null);
                 userService.addUser(user);
                 owner.setOwnerId(user.getId());
                 ownerRepository.save(owner);
@@ -106,8 +110,7 @@ public class OwnerServiceImpl implements OwnerService {
         Optional<Owner> ownerToUpdate = ownerRepository.findById(owner.getOwnerId());
         Owner finalOwner;
         if (ownerToUpdate.isPresent()) {
-            User userToUpdate = new User(ownerToUpdate.get().getOwnerId(), ownerToUpdate.get().getEmail(),
-                    ownerToUpdate.get().getPassword(), UserType.OWNER);
+            User userToUpdate = userService.getUserById(ownerToUpdate.get().getOwnerId());
             User finalUser = createUser(owner, userToUpdate);
             finalOwner = createOwner(owner, ownerToUpdate.get());
             try {
@@ -116,11 +119,27 @@ public class OwnerServiceImpl implements OwnerService {
                 throw new InvalidOwnerException(exp.getMessage());
             }
             ownerRepository.save(finalOwner);
-            userService.addUser(finalUser);
+            userService.updateUser(finalUser);
         } else {
             throw new OwnerNotFoundException("Owner to update not found");
         }
         return finalOwner;
+    }
+
+    @Override
+    public Owner updatePassword(long id, String password) throws InvalidOwnerException, OwnerNotFoundException {
+        Optional<Owner> ownerToUpdate = ownerRepository.findById(id);
+        ownerToUpdate.get().setPassword(password);
+        try {
+            ownerDetailsValidator.validateOwnerDetails(ownerToUpdate.get());
+        } catch (WrongDetailsException exp) {
+            throw new InvalidOwnerException(exp.getMessage());
+        }
+        ownerToUpdate.get().setPassword(passwordEncoder.encode(password));
+        User userToUpdate = userService.getUserById(id);
+        User finalUser = createUser(ownerToUpdate.get(), userToUpdate);
+        userService.updateUser(finalUser);
+        return ownerRepository.save(ownerToUpdate.get());
     }
 
     @Override
@@ -153,9 +172,6 @@ public class OwnerServiceImpl implements OwnerService {
         }
         if (owner.getEmail() != null) {
             ownerToUpdate.setEmail(owner.getEmail());
-        }
-        if (owner.getPassword() != null) {
-            ownerToUpdate.setPassword(owner.getPassword());
         }
         if (owner.getPhoneNumber() != null) {
             ownerToUpdate.setPhoneNumber(owner.getPhoneNumber());

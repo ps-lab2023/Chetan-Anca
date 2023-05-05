@@ -1,7 +1,9 @@
 package com.softwareProject.PetClinicProject.service;
 
+import com.softwareProject.PetClinicProject.exception.DoctorNotFoundException;
 import com.softwareProject.PetClinicProject.exception.InvalidUserException;
 import com.softwareProject.PetClinicProject.exception.UserNotFoundException;
+import com.softwareProject.PetClinicProject.model.Doctor;
 import com.softwareProject.PetClinicProject.model.User;
 import com.softwareProject.PetClinicProject.model.UserType;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ public interface UserService {
     User getUserById(long id) throws UserNotFoundException;
 
     User getUserByEmailAndPassword(String email, String password) throws UserNotFoundException;
+
+    User getUserByEmail(String email) throws UserNotFoundException;
 
     List<User> getAllUsers();
 

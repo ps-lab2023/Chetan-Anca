@@ -45,6 +45,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByEmail(String email) throws UserNotFoundException {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (!user.isPresent()) {
+            throw new UserNotFoundException("User with email " + email + " not found");
+        }
+        return user.get();
+    }
+
+    @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -102,6 +111,22 @@ public class UserServiceImpl implements UserService {
         if (user.getPassword() != null) {
             userToUpdate.setPassword(user.getPassword());
         }
+        if (user.isLogged() != userToUpdate.isLogged()) {
+            userToUpdate.setLogged(user.isLogged());
+        }
+
+        if (user.getLastLoggedIn() == null && userToUpdate.getLastLoggedIn() != null) {
+            userToUpdate.setLastLoggedIn(user.getLastLoggedIn());
+        } else if (user.getLastLoggedIn() != null && userToUpdate.getLastLoggedIn() != null && !user.getLastLoggedIn().equals(userToUpdate.getLastLoggedIn())) {
+            userToUpdate.setLastLoggedIn(user.getLastLoggedIn());
+        }
+
+        if (user.getLastLoggedOut() == null && userToUpdate.getLastLoggedOut() != null) {
+            userToUpdate.setLastLoggedOut(user.getLastLoggedOut());
+        } else if (user.getLastLoggedOut() != null && userToUpdate.getLastLoggedOut() != null && !user.getLastLoggedIn().equals(userToUpdate.getLastLoggedOut())) {
+            userToUpdate.setLastLoggedOut(user.getLastLoggedOut());
+        }
+
         return userToUpdate;
     }
 }

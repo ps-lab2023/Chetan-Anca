@@ -1,6 +1,10 @@
 package com.softwareProject.PetClinicProject;
 
+import com.softwareProject.PetClinicProject.dto.DoctorDto;
+import com.softwareProject.PetClinicProject.dto.OwnerDto;
+import com.softwareProject.PetClinicProject.dto.UserDto;
 import com.softwareProject.PetClinicProject.model.*;
+import com.softwareProject.PetClinicProject.security.AuthenticationService;
 import com.softwareProject.PetClinicProject.service.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,22 +29,25 @@ public class PetClinicProjectApplication {
                            DoctorService doctorService,
                            AppointmentService appointmentService,
                            AnimalService animalService,
-                           MedicalFacilityService medicalFacilityService) {
+                           MedicalFacilityService medicalFacilityService,
+                           AuthenticationService authenticationService,
+                           BillService billService,
+                           EmailService emailService) {
         return args -> {
 
-            User admin = new User();
+            UserDto admin = new UserDto();
             admin.setEmail("anca.chetan1706@yahoo.com");
             admin.setPassword("Parola@Mea123");
             admin.setUserType(UserType.ADMIN);
-            userService.addUser(admin);
+            authenticationService.registerAdmin(admin);
 
-            Owner owner = new Owner();
+            OwnerDto owner = new OwnerDto();
             owner.setFirstName("Andreea");
             owner.setLastName("Dragus");
-            owner.setEmail("dragusandreea33@yahoo.com");
+            owner.setEmail("anca.chetan1706@gmail.com");
             owner.setPassword("Andreea.1232");
             owner.setPhoneNumber("0751951499");
-            ownerService.addOwner(owner);
+            authenticationService.registerOwner(owner);
 
             Owner owner2 = new Owner();
             owner2.setFirstName("Andreea");
@@ -66,7 +73,7 @@ public class PetClinicProjectApplication {
             owner4.setPhoneNumber("0745634851");
             ownerService.addOwner(owner4);
 
-            Doctor doctor = new Doctor();
+            DoctorDto doctor = new DoctorDto();
             doctor.setFirstName("Ana");
             doctor.setLastName("Pop");
             doctor.setEmail("anaPop@yahoo.com");
@@ -74,7 +81,7 @@ public class PetClinicProjectApplication {
             doctor.setPhoneNumber("0756326597");
             doctor.setStartScheduleTime(LocalTime.of(8, 0, 0));
             doctor.setEndScheduleTime(LocalTime.of(14, 0, 0));
-            doctorService.addDoctor(doctor);
+            authenticationService.registerDoctor(doctor);
 
             Doctor doctor1 = new Doctor();
             doctor1.setFirstName("Mihai");
@@ -127,7 +134,7 @@ public class PetClinicProjectApplication {
             medicalFacilityService.addMedicalService(medicalFacility3);
 
             Animal animal1 = new Animal();
-            animal1.setOwner(owner);
+            animal1.setOwner(ownerService.getOwnerByEmail(owner.getEmail()));
             animal1.setName("Mitzu");
             animal1.setType(AnimalType.CAT);
             animal1.setBreed("Scottish fold");
@@ -145,7 +152,7 @@ public class PetClinicProjectApplication {
             animalService.addAnimal(animal2);
 
             Appointment appointment = new Appointment();
-            appointment.setDoctor(doctor);
+            appointment.setDoctor(doctorService.getDoctorByEmail(doctor.getEmail()));
             appointment.setAnimal(animal1);
             appointment.setDate(LocalDateTime.of(2023, 4, 20, 13, 0, 0));
             List<MedicalFacility> medicalFacilityList = new ArrayList<>();

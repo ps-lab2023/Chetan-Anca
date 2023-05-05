@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @NoArgsConstructor
+@Builder
 public class MedicalFacility {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

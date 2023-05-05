@@ -2,7 +2,10 @@ package com.softwareProject.PetClinicProject.service;
 
 import com.softwareProject.PetClinicProject.exception.DoctorNotFoundException;
 import com.softwareProject.PetClinicProject.exception.InvalidDoctorException;
+import com.softwareProject.PetClinicProject.exception.InvalidOwnerException;
+import com.softwareProject.PetClinicProject.exception.OwnerNotFoundException;
 import com.softwareProject.PetClinicProject.model.Doctor;
+import com.softwareProject.PetClinicProject.model.Owner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,6 +30,8 @@ public interface DoctorService {
     Doctor addDoctor(Doctor doctor) throws InvalidDoctorException;
 
     Doctor updateDoctor(Doctor doctor) throws InvalidDoctorException, DoctorNotFoundException;
+
+    Doctor updatePassword(long id, String password) throws InvalidDoctorException, DoctorNotFoundException;
 
     void deleteDoctorById(long id) throws DoctorNotFoundException;
 }

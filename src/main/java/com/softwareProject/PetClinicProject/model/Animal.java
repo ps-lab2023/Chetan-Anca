@@ -14,6 +14,7 @@ import java.util.List;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Animal implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

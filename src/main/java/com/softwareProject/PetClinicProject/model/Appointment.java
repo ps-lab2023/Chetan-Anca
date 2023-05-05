@@ -7,9 +7,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -41,7 +39,7 @@ public class Appointment implements Serializable {
                 '}';
     }
 
-    private int computePrice() {
+    public int computePrice() {
         int price = 0;
         for (MedicalFacility medicalFacility : medicalFacilities) {
             price += medicalFacility.getPrice();

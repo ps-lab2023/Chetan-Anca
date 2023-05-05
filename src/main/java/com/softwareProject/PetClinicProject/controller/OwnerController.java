@@ -2,6 +2,7 @@ package com.softwareProject.PetClinicProject.controller;
 
 import com.softwareProject.PetClinicProject.dto.OwnerDto;
 import com.softwareProject.PetClinicProject.model.Owner;
+import com.softwareProject.PetClinicProject.service.EmailService;
 import com.softwareProject.PetClinicProject.service.OwnerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class OwnerController {
     private OwnerService ownerService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("/findById")
     public ResponseEntity getOwnerById(@RequestParam long id) {
@@ -90,6 +93,13 @@ public class OwnerController {
     public ResponseEntity updateOwner(@RequestBody OwnerDto ownerDto) {
         Owner owner = modelMapper.map(ownerDto, Owner.class);
         Owner ownerReturned = ownerService.updateOwner(owner);
+        OwnerDto ownerDtoReturned = modelMapper.map(ownerReturned, OwnerDto.class);
+        return ResponseEntity.status(HttpStatus.OK).body(ownerDtoReturned);
+    }
+
+    @PutMapping("/updatePassword")
+    public ResponseEntity updateOwnerPassword(@RequestParam long id, @RequestParam String password) {
+        Owner ownerReturned = ownerService.updatePassword(id, password);
         OwnerDto ownerDtoReturned = modelMapper.map(ownerReturned, OwnerDto.class);
         return ResponseEntity.status(HttpStatus.OK).body(ownerDtoReturned);
     }

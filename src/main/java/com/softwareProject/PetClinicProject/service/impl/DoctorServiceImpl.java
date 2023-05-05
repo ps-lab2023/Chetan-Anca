@@ -2,6 +2,7 @@ package com.softwareProject.PetClinicProject.service.impl;
 
 import com.softwareProject.PetClinicProject.exception.DoctorNotFoundException;
 import com.softwareProject.PetClinicProject.exception.InvalidDoctorException;
+import com.softwareProject.PetClinicProject.exception.InvalidOwnerException;
 import com.softwareProject.PetClinicProject.model.*;
 import com.softwareProject.PetClinicProject.service.DoctorService;
 import com.softwareProject.PetClinicProject.service.UserService;
@@ -9,8 +10,10 @@ import com.softwareProject.PetClinicProject.validator.DoctorDetailsValidator;
 import com.softwareProject.PetClinicProject.exception.WrongDetailsException;
 import com.softwareProject.PetClinicProject.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +25,9 @@ public class DoctorServiceImpl implements DoctorService {
     private DoctorDetailsValidator doctorDetailsValidator;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public DoctorServiceImpl(DoctorRepository doctorRepository, DoctorDetailsValidator doctorDetailsValidator, UserService userService) {
         this.doctorRepository = doctorRepository;
@@ -53,7 +59,7 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public List<Doctor> getAllDoctorsByLastName(String lastName){
+    public List<Doctor> getAllDoctorsByLastName(String lastName) {
         return doctorRepository.findAllByLastName(lastName);
     }
 
@@ -87,7 +93,7 @@ public class DoctorServiceImpl implements DoctorService {
             doctorDetailsValidator.validateDoctorDetails(doctor);
             Optional<Doctor> foundDoctor = doctorRepository.findByEmail(doctor.getEmail());
             if (!foundDoctor.isPresent()) {
-                User user = new User(doctor.getDoctorId(), doctor.getEmail(), doctor.getPassword(), UserType.DOCTOR);
+                User user = new User(doctor.getDoctorId(), doctor.getEmail(), doctor.getPassword(), UserType.DOCTOR, false, null, null);
                 userService.addUser(user);
                 doctor.setDoctorId(user.getId());
                 doctorRepository.save(doctor);
@@ -105,8 +111,7 @@ public class DoctorServiceImpl implements DoctorService {
         Optional<Doctor> doctorToUpdate = doctorRepository.findById(doctor.getDoctorId());
         Doctor finalDoctor;
         if (doctorToUpdate.isPresent()) {
-            User userToUpdate = new User(doctorToUpdate.get().getDoctorId(), doctorToUpdate.get().getEmail(),
-                    doctorToUpdate.get().getPassword(), UserType.DOCTOR);
+            User userToUpdate = userService.getUserById(doctorToUpdate.get().getDoctorId());
             User finalUser = createUser(doctor, userToUpdate);
             finalDoctor = createDoctor(doctor, doctorToUpdate.get());
             try {
@@ -115,11 +120,27 @@ public class DoctorServiceImpl implements DoctorService {
                 throw new InvalidDoctorException(exp.getMessage());
             }
             doctorRepository.save(finalDoctor);
-            userService.addUser(finalUser);
+            userService.updateUser(finalUser);
         } else {
             throw new DoctorNotFoundException("Doctor to add not found");
         }
         return finalDoctor;
+    }
+
+    @Override
+    public Doctor updatePassword(long id, String password) throws InvalidDoctorException, DoctorNotFoundException {
+        Optional<Doctor> doctorToUpdate = doctorRepository.findById(id);
+        doctorToUpdate.get().setPassword(password);
+        try {
+            doctorDetailsValidator.validateDoctorDetails(doctorToUpdate.get());
+        } catch (WrongDetailsException exp) {
+            throw new InvalidDoctorException(exp.getMessage());
+        }
+        doctorToUpdate.get().setPassword(passwordEncoder.encode(password));
+        User userToUpdate = userService.getUserById(id);
+        User finalUser = createUser(doctorToUpdate.get(), userToUpdate);
+        userService.updateUser(finalUser);
+        return doctorRepository.save(doctorToUpdate.get());
     }
 
 
@@ -153,9 +174,6 @@ public class DoctorServiceImpl implements DoctorService {
         }
         if (doctor.getEmail() != null) {
             doctorToUpdate.setEmail(doctor.getEmail());
-        }
-        if (doctor.getPassword() != null) {
-            doctorToUpdate.setPassword(doctor.getPassword());
         }
         if (doctor.getPhoneNumber() != null) {
             doctorToUpdate.setPhoneNumber(doctor.getPhoneNumber());
